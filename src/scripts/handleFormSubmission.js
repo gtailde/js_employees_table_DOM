@@ -1,7 +1,7 @@
 import { pushNotification } from './pushNotification';
-import { tbody } from './modules/constants';
 
 const addDataToTable = (employeInfo) => {
+  const tbody = document.querySelector('tbody');
   const tr = document.createElement('tr');
 
   Object.values(employeInfo).forEach((cellData) => {

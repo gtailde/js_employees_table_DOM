@@ -8,18 +8,19 @@ export const sort = (container, elements, column, sortType, sortBy = 'asc') => {
         b.cells[column].innerText.trim(),
       ];
 
+      let sortResult;
+
       if (sortType === 'string') {
-        return sortBy === 'asc'
-          ? textA.localeCompare(textB)
-          : textB.localeCompare(textA);
-      } else {
+        sortResult = textA.localeCompare(textB);
+      } else if (sortType === 'number') {
         textA = textA.replace(/[$,]/g, '');
         textB = textB.replace(/[$,]/g, '');
-
-        return sortBy === 'asc'
-          ? parseFloat(textA) - parseFloat(textB)
-          : parseFloat(textB) - parseFloat(textA);
+        sortResult = parseFloat(textA) - parseFloat(textB);
       }
+
+      return sortBy === 'asc' ? sortResult : -sortResult;
     })
-    .forEach((el) => container.append(el));
+    .forEach((el) => {
+      container.append(el);
+    });
 };
