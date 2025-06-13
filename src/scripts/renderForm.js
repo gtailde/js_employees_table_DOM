@@ -1,5 +1,5 @@
 import { handleFormSubmission } from './handleFormSubmission';
-import countries from '../data/countries.json';
+import cities from '../data/cities.json';
 
 const createLabeledField = (labelText, elementTag, dataQa, type = '') => {
   const label = document.createElement('label');
@@ -33,8 +33,8 @@ export const renderForm = () => {
   officeSelect.setAttribute('data-qa', 'office');
   officeSelect.setAttribute('name', 'office');
 
-  countries.forEach((country) => {
-    const option = new Option(country, country);
+  cities.forEach((citie) => {
+    const option = new Option(citie, citie);
 
     officeSelect.add(option);
   });

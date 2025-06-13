@@ -64,7 +64,7 @@ export const updateCell = (
     case 4:
       newValue = formatCurrency(inputValue);
 
-      if (typeof newValue !== 'string' || !newValue.trim()) {
+      if (!newValue) {
         selectedCell.innerText = initText;
 
         return pushNotification(

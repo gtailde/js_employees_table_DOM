@@ -1,7 +1,7 @@
 export const formatCurrency = (value) => {
   const amount = value.replace(/[$,]/g, '');
 
-  if (isNaN(amount)) {
+  if (isNaN(amount) || amount <= 0) {
     return;
   }
 

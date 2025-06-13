@@ -56,7 +56,9 @@ export const handleFormSubmission = () => {
     return null;
   }
 
-  if (!values.salary) {
+  const salary = formatCurrency(values.salary);
+
+  if (!salary) {
     pushNotification(
       20,
       20,
@@ -67,7 +69,7 @@ export const handleFormSubmission = () => {
 
     return null;
   } else {
-    values.salary = formatCurrency(values.salary);
+    values.salary = salary;
   }
 
   addDataToTable(values);

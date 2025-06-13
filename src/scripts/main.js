@@ -82,7 +82,7 @@ tbody.addEventListener('dblclick', (e) => {
   cellInput.focus();
 
   cellInput.addEventListener('blur', () => {
-    updateCell(cellInput, initText, column, employerName);
+    updateCell(selectedCell, cellInput, initText, column, employerName);
     selectedCell = null;
   });
 });
