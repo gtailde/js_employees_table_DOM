@@ -1,5 +1,6 @@
 'use strict';
 
+import { formatCurrency } from './formatCurrency';
 import { handleFormSubmission } from './handleFormSubmission';
 import { pushNotification } from './pushNotification';
 import { renderForm } from './renderForm';
@@ -11,7 +12,6 @@ const table = document.querySelector('table');
 const tbody = table.querySelector('tbody');
 const thead = table.querySelector('thead');
 const theadRow = thead.querySelector('tr');
-const tbodyRows = tbody.querySelectorAll('tr');
 
 let currentSortColumn;
 let activeRow;
@@ -20,7 +20,7 @@ let selectedCell;
 table.addEventListener('click', (e) => {
   const target = e.target;
 
-  if (target.tagName === 'TH') {
+  if (target.closest('thead') && target.tagName === 'TH') {
     const bodyRows = tbody.querySelectorAll('tr');
     const th = target;
     const siblings = Array.from(th.parentNode.children);
@@ -51,28 +51,83 @@ table.addEventListener('click', (e) => {
 });
 
 const updateCell = (cellInput, initText, column, employerName) => {
-  selectedCell.innerHTML = '';
-
   const changedProperty = theadRow.children[column].innerText;
+  const inputValue = cellInput.value?.trim();
 
-  if (!cellInput.value) {
+  cellInput.remove();
+
+  if (!inputValue) {
     selectedCell.innerText = initText;
 
-    pushNotification(
+    return pushNotification(
       20,
       20,
       'Update cell error',
       'Cell cannot be empty, initial value set',
+      'error',
     );
-  } else {
-    pushNotification(
-      20,
-      20,
-      'Cell successfully updated',
-      `${changedProperty} for employee ${employerName} has been changed`,
-    );
-    selectedCell.innerText = cellInput.value;
   }
+
+  let newValue;
+
+  switch (column) {
+    case 0:
+    case 1:
+    case 2:
+      if (inputValue.length < 4) {
+        selectedCell.innerText = initText;
+
+        return pushNotification(
+          20,
+          20,
+          'Update cell error',
+          `Cell ${changedProperty} must contain more than 4 characters`,
+          'error',
+        );
+      }
+      newValue = inputValue;
+      break;
+    case 3:
+      const age = Number(inputValue);
+
+      if (isNaN(age) || age < 18 || age > 90) {
+        selectedCell.innerText = initText;
+
+        return pushNotification(
+          20,
+          20,
+          'Update cell error',
+          `Cell ${changedProperty} must be from 18 to 90`,
+          'error',
+        );
+      }
+      newValue = String(age);
+      break;
+    case 4:
+      newValue = formatCurrency(inputValue);
+
+      if (typeof newValue !== 'string' || !newValue.trim()) {
+        selectedCell.innerText = initText;
+
+        return pushNotification(
+          20,
+          20,
+          'Update cell error',
+          `Invalid ${changedProperty}, initial value set`,
+          'error',
+        );
+      }
+      break;
+  }
+
+  selectedCell.innerText = newValue;
+
+  pushNotification(
+    20,
+    20,
+    'Cell successfully updated',
+    `${changedProperty} for employee ${employerName} has been changed`,
+  );
 
   selectedCell = null;
 };
@@ -89,32 +144,31 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-tbodyRows.forEach((row) => {
-  row.addEventListener('dblclick', (e) => {
-    selectedCell = e.target.closest('td');
+tbody.addEventListener('dblclick', (e) => {
+  selectedCell = e.target;
 
-    if (!selectedCell) {
-      return;
-    }
+  if (!selectedCell) {
+    return;
+  }
 
-    const employerName = row.children[0].innerText;
+  const tbodyRow = selectedCell.closest('tr');
+  const employerName = tbodyRow.children[0].innerText;
 
-    const siblings = Array.from(selectedCell.parentNode.children);
-    const column = siblings.indexOf(selectedCell);
+  const siblings = Array.from(selectedCell.parentNode.children);
+  const column = siblings.indexOf(selectedCell);
 
-    const initText = selectedCell.innerText;
-    const cellInput = document.createElement('input');
+  const initText = selectedCell.innerText;
+  const cellInput = document.createElement('input');
 
-    cellInput.classList.add('cell-input');
-    cellInput.value = initText;
+  cellInput.classList.add('cell-input');
+  cellInput.value = initText;
 
-    selectedCell.innerHTML = '';
-    selectedCell.append(cellInput);
+  selectedCell.innerHTML = '';
+  selectedCell.append(cellInput);
 
-    cellInput.focus();
+  cellInput.focus();
 
-    cellInput.addEventListener('blur', () => {
-      updateCell(cellInput, initText, column, employerName);
-    });
+  cellInput.addEventListener('blur', () => {
+    updateCell(cellInput, initText, column, employerName);
   });
 });

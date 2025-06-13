@@ -1,3 +1,4 @@
+import { formatCurrency } from './formatCurrency';
 import { pushNotification } from './pushNotification';
 
 const addDataToTable = (employeInfo) => {
@@ -66,11 +67,7 @@ export const handleFormSubmission = () => {
 
     return null;
   } else {
-    values.salary = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0,
-    }).format(values.salary);
+    values.salary = formatCurrency(values.salary);
   }
 
   addDataToTable(values);
