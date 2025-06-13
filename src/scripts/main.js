@@ -1,17 +1,12 @@
 'use strict';
 
-import { formatCurrency } from './formatCurrency';
-import { handleFormSubmission } from './handleFormSubmission';
-import { pushNotification } from './pushNotification';
-import { renderForm } from './renderForm';
+import { table, tbody } from './variables';
 import { sort } from './sort';
+import { renderForm } from './renderForm';
+import { handleFormSubmission } from './handleFormSubmission';
+import { updateCell } from './updateCell';
 
 renderForm();
-
-const table = document.querySelector('table');
-const tbody = table.querySelector('tbody');
-const thead = table.querySelector('thead');
-const theadRow = thead.querySelector('tr');
 
 let currentSortColumn;
 let activeRow;
@@ -49,88 +44,6 @@ table.addEventListener('click', (e) => {
     tr.classList.add('active');
   }
 });
-
-const updateCell = (cellInput, initText, column, employerName) => {
-  const changedProperty = theadRow.children[column].innerText;
-  const inputValue = cellInput.value?.trim();
-
-  cellInput.remove();
-
-  if (!inputValue) {
-    selectedCell.innerText = initText;
-
-    return pushNotification(
-      20,
-      20,
-      'Update cell error',
-      'Cell cannot be empty, initial value set',
-      'error',
-    );
-  }
-
-  let newValue;
-
-  switch (column) {
-    case 0:
-    case 1:
-    case 2:
-      if (inputValue.length < 4) {
-        selectedCell.innerText = initText;
-
-        return pushNotification(
-          20,
-          20,
-          'Update cell error',
-          `Cell ${changedProperty} must contain more than 4 characters`,
-          'error',
-        );
-      }
-      newValue = inputValue;
-      break;
-    case 3:
-      const age = Number(inputValue);
-
-      if (isNaN(age) || age < 18 || age > 90) {
-        selectedCell.innerText = initText;
-
-        return pushNotification(
-          20,
-          20,
-          'Update cell error',
-          `Cell ${changedProperty} must be from 18 to 90`,
-          'error',
-        );
-      }
-      newValue = String(age);
-      break;
-    case 4:
-      newValue = formatCurrency(inputValue);
-
-      if (typeof newValue !== 'string' || !newValue.trim()) {
-        selectedCell.innerText = initText;
-
-        return pushNotification(
-          20,
-          20,
-          'Update cell error',
-          `Invalid ${changedProperty}, initial value set`,
-          'error',
-        );
-      }
-      break;
-  }
-
-  selectedCell.innerText = newValue;
-
-  pushNotification(
-    20,
-    20,
-    'Cell successfully updated',
-    `${changedProperty} for employee ${employerName} has been changed`,
-  );
-
-  selectedCell = null;
-};
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
@@ -170,5 +83,6 @@ tbody.addEventListener('dblclick', (e) => {
 
   cellInput.addEventListener('blur', () => {
     updateCell(cellInput, initText, column, employerName);
+    selectedCell = null;
   });
 });
